@@ -1,0 +1,693 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{max-width:390px;margin:0 auto;padding-bottom:72px;font-family:var(--font-sans)}
+.header{padding:14px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--color-background-primary);z-index:10}
+.header h1{font-size:17px;font-weight:500;color:var(--color-text-primary)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;z-index:20}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border:none;background:transparent;cursor:pointer;font-size:10px;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.nb.active{color:#1D9E75}.nb i{font-size:22px}
+.screen{display:none;padding:16px}.screen.active{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:12px}
+.badge{display:inline-block;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.bg{background:#E1F5EE;color:#0F6E56}.ba{background:#FAEEDA;color:#854F0B}.bp{background:#FBEAF0;color:#993556}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin:2px;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.mes-tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
+.mes-tabs::-webkit-scrollbar{display:none}
+.mtab{padding:7px 16px;border-radius:20px;border:0.5px solid var(--color-border-secondary);font-size:12px;cursor:pointer;white-space:nowrap;background:transparent;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.mtab.active{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.sem-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.sem-tabs::-webkit-scrollbar{display:none}
+.stab{padding:5px 12px;border-radius:20px;border:0.5px solid var(--color-border-secondary);font-size:11px;cursor:pointer;white-space:nowrap;background:transparent;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.stab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.prog-wrap{margin-bottom:16px}
+.prog-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;display:flex;justify-content:space-between}
+.prog-bar{height:6px;background:var(--color-background-secondary);border-radius:3px}
+.prog-fill{height:100%;border-radius:3px;background:#1D9E75;transition:width .3s}
+.t-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.btn-p{width:100%;padding:11px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;font-size:14px;font-weight:500;cursor:pointer;margin-top:10px;font-family:var(--font-sans)}
+.ex-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.ex-meta{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.ex-dica{font-size:11px;color:var(--color-text-secondary);font-style:italic;margin-top:3px}
+.carga-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.cbtn{width:30px;height:30px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-primary);font-family:var(--font-sans)}
+.cval{font-size:14px;font-weight:500;min-width:50px;text-align:center;color:var(--color-text-primary)}
+.ultima{font-size:11px;color:#1D9E75;margin-top:2px}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px}
+.stat-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.hist-item{padding:12px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.hist-item:last-child{border-bottom:none}
+.hist-date{font-size:11px;color:var(--color-text-secondary)}
+.hist-name{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-top:2px}
+.hist-exs{font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.8}
+.empty{text-align:center;padding:40px 0;color:var(--color-text-secondary);font-size:14px}
+.toaster{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#2C2C2A;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:99;white-space:nowrap}
+.super-tag{font-size:10px;padding:2px 7px;border-radius:10px;background:#FBEAF0;color:#993556;font-weight:500;margin-left:4px}
+.tip-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--color-text-secondary);border-left:3px solid #1D9E75}
+.phase-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--border-radius-md);margin-bottom:8px;font-size:12px;font-weight:500}
+.phase-header.aquec{background:#E6F1FB;color:#185FA5}
+.phase-header.treino{background:#E1F5EE;color:#0F6E56}
+.phase-header.cardio{background:#FAEEDA;color:#854F0B}
+.phase-header.along{background:#FBEAF0;color:#993556}
+.phase-item{padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.phase-item:last-child{border-bottom:none}
+.session-summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.sum-pill{display:flex;align-items:center;gap:5px;font-size:11px;padding:5px 10px;border-radius:20px;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.salvo-dot{width:7px;height:7px;border-radius:50%;background:#1D9E75;display:inline-block;margin-right:4px}
+</style>
+
+<div class="app">
+<div class="header">
+  <i class="ti ti-barbell" style="font-size:22px;color:#1D9E75" aria-hidden="true"></i>
+  <h1 id="htitle">Programa 3 meses</h1>
+  <span id="save-indicator" style="margin-left:auto;font-size:11px;color:var(--color-text-secondary);display:none">
+    <span class="salvo-dot"></span>salvo
+  </span>
+</div>
+
+<div class="screen active" id="sc-treinos">
+  <div class="mes-tabs" id="mes-tabs"></div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span id="prog-text">Mês 1 — Adaptação</span><span id="prog-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="sem-tabs" id="sem-tabs"></div>
+  <div id="treinos-list"></div>
+</div>
+
+<div class="screen" id="sc-treinar">
+  <div id="treinar-content"></div>
+</div>
+
+<div class="screen" id="sc-prog">
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Treinos feitos</div><div class="stat-val" id="st-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">Mês atual</div><div class="stat-val" id="st-mes">M1</div></div>
+    <div class="stat-card"><div class="stat-label">Semana atual</div><div class="stat-val" id="st-sem">S1</div></div>
+    <div class="stat-card"><div class="stat-label">Exercícios feitos</div><div class="stat-val" id="st-exs">0</div></div>
+  </div>
+  <div id="hist-list"></div>
+</div>
+
+<nav class="nav">
+  <button class="nb active" onclick="goScreen('treinos',this)"><i class="ti ti-dumbbell"></i>Treinos</button>
+  <button class="nb" onclick="goScreen('treinar',this)"><i class="ti ti-player-play"></i>Treinar</button>
+  <button class="nb" onclick="goScreen('prog',this)"><i class="ti ti-chart-line"></i>Progresso</button>
+</nav>
+</div>
+<div class="toaster" id="toaster"></div>
+
+<script>
+const AQUEC={
+  upper:[
+    {n:"Bike ergométrica",d:"5 min intensidade leve (zona 1) — eleva frequência cardíaca gradualmente"},
+    {n:"Rotação de ombro com halter leve",d:"2×15 cada braço — mobiliza articulação do ombro"},
+    {n:"Band pull-apart (ou cabo)",d:"2×15 — ativa manguito rotador e estabilizadores"},
+    {n:"Supino ou remada com 50% da carga",d:"1×15 — aquece o padrão de movimento principal"},
+  ],
+  lower:[
+    {n:"Bike ergométrica",d:"5 min intensidade leve — aquece joelho e quadril gradualmente"},
+    {n:"Mobilização de quadril (círculos)",d:"2×10 cada lado — amplitude no quadril sem estresse no joelho"},
+    {n:"Agachamento livre sem peso",d:"2×15 — ativa glúteo e quadríceps, prepara o LCA"},
+    {n:"Extensora com 40% da carga",d:"1×15 — ativa quadríceps respeitando amplitude reduzida"},
+  ],
+};
+const ALONG={
+  upper:[
+    {n:"Peitoral na parede",d:"30s cada lado — abre o peito, fundamental pós-supino"},
+    {n:"Alongamento de ombro cruzado",d:"30s cada lado — alivia tensão pós-desenvolvimento"},
+    {n:"Tríceps atrás da cabeça",d:"30s cada lado — alonga após série de tríceps"},
+    {n:"Gato-vaca (coluna)",d:"10 reps lentas — mobiliza coluna torácica"},
+  ],
+  lower:[
+    {n:"Flexor de quadril (ajoelhado)",d:"40s cada lado — essencial para quem joga tênis"},
+    {n:"Posterior de coxa (deitado)",d:"40s cada lado — alonga isquiotibiais sem estresse no joelho"},
+    {n:"Glúteo em 4 (pombo deitado)",d:"40s cada lado — libera glúteo e piriforme"},
+    {n:"Panturrilha na parede",d:"30s cada lado — alonga gastrocnêmio pós-treino de perna"},
+  ],
+};
+const CARDIO={
+  1:{equip:"Bike ergométrica",tempo:"15 min",protocolo:"Ritmo constante e leve — zona 2 (consegue conversar). RPE 5/10."},
+  2:{equip:"Esteira (caminhada inclinada)",tempo:"18 min",protocolo:"Inclinação 8-10%, velocidade 5-6 km/h. RPE 5-6/10."},
+  3:{equip:"Bike ergométrica",tempo:"20 min",protocolo:"2 min leve + 1 min moderado (alterna). RPE alterna 4 e 6/10."},
+  4:{equip:"Esteira (caminhada inclinada)",tempo:"20 min",protocolo:"Inclinação 10-12%, velocidade 5.5-6.5 km/h. RPE 6/10."},
+  5:{equip:"Bike ergométrica",tempo:"18 min",protocolo:"Zona 2 constante — força é prioridade. RPE 5/10."},
+  6:{equip:"Esteira (caminhada inclinada)",tempo:"18 min",protocolo:"Inclinação 10%, velocidade 6 km/h. RPE 5-6/10."},
+  7:{equip:"Bike ergométrica",tempo:"15 min",protocolo:"Semana de pico — cardio reduzido. Ritmo leve, zona 1-2. RPE 4-5/10."},
+  8:{equip:"Esteira (caminhada inclinada)",tempo:"20 min",protocolo:"Deload — leve e prazeroso. Inclinação 6-8%, velocidade 4.5-5.5 km/h. RPE 4/10."},
+  9:{equip:"Bike ergométrica",tempo:"15 min",protocolo:"2 min zona 2 + 30s aceleração (repete 5x). RPE alterna 5 e 7/10."},
+  10:{equip:"Esteira (caminhada/trote leve)",tempo:"18 min",protocolo:"2 min caminhada inclinada + 1 min trote leve (se joelho permitir). RPE alterna 5 e 6/10."},
+  11:{equip:"Bike ergométrica",tempo:"15 min",protocolo:"Semana de pico — 3 séries de 3 min moderado + 2 min leve. RPE alterna 6 e 4/10."},
+  12:{equip:"Esteira (caminhada inclinada)",tempo:"20 min",protocolo:"Semana de teste — Inclinação 10%, velocidade 6 km/h. Registre como se sentiu. RPE 5-6/10."},
+};
+
+const PROGRAMA={
+  1:{nome:"Adaptação",badge:"bg",cor:"#1D9E75",semanas:{
+    1:{foco:"Cargas leves — aprender os movimentos",treinos:{
+      A:{nome:"A — Peito + Costas + Core",tipo:"upper",exs:[
+        {n:"Supino na máquina",s:3,r:"12-15",g:"Peito",d:"Cotovelos a 45°, foco na contração"},
+        {n:"Remada baixa (cabo)",s:3,r:"12-15",g:"Costas",d:"Puxe para o umbigo, abra o peito"},
+        {n:"Crucifixo peck deck",s:3,r:"15",g:"Peito",d:"Leve, foco na amplitude"},
+        {n:"Pulldown barra reta",s:3,r:"12-15",g:"Costas",d:"Puxe até o queixo"},
+        {n:"Prancha isométrica",s:3,r:"30s",g:"Core",d:"Quadril neutro, respire normalmente"},
+        {n:"Crunch na polia",s:3,r:"15",g:"Core",d:"Contraia o abdômen no final"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento na máquina",s:3,r:"12-15",g:"Ombro",d:"Não trave o cotovelo no topo"},
+        {n:"Elevação lateral halteres",s:3,r:"15",g:"Ombro",d:"Leve, cotovelo levemente flexionado"},
+        {n:"Rosca direta barra EZ",s:3,r:"12",g:"Bíceps",d:"Não balance o tronco"},
+        {n:"Rosca martelo",s:3,r:"12",g:"Bíceps",d:"Alternado, pegada neutra"},
+        {n:"Tríceps polia corda",s:3,r:"12-15",g:"Tríceps",d:"Cotovelos fixos, estenda bem"},
+        {n:"Tríceps testa barra EZ",s:3,r:"12",g:"Tríceps",d:"Lento na descida"},
+      ]},
+      C:{nome:"C — Perna complementar",tipo:"lower",exs:[
+        {n:"Leg press 45°",s:3,r:"15",g:"Quadríceps",d:"Pé na parte alta, joelho alinhado"},
+        {n:"Extensora (0°-60° apenas)",s:3,r:"15",g:"Quadríceps",d:"Amplitude reduzida — protege o LCA"},
+        {n:"Flexora deitada",s:3,r:"15",g:"Posterior",d:"Movimento controlado"},
+        {n:"Cadeira abdutora",s:3,r:"15",g:"Glúteo",d:"Essencial para estabilidade do joelho"},
+        {n:"Panturrilha na máquina",s:3,r:"20",g:"Panturrilha",d:"Amplitude completa"},
+        {n:"Agachamento no Smith",s:3,r:"12",g:"Glúteo/Quad",d:"Peso leve, foco na técnica"},
+      ]},
+    }},
+    2:{foco:"+1 série, cargas +5%",treinos:{
+      A:{nome:"A — Peito + Costas + Core",tipo:"upper",exs:[
+        {n:"Supino na máquina",s:4,r:"12",g:"Peito",d:"Suba 2-3kg se sentiu fácil"},
+        {n:"Remada baixa (cabo)",s:4,r:"12",g:"Costas",d:"Pausa de 1s no final"},
+        {n:"Crucifixo peck deck",s:3,r:"12",g:"Peito",d:"Levemente mais pesado"},
+        {n:"Pulldown barra reta",s:4,r:"12",g:"Costas",d:"Controle a subida"},
+        {n:"Prancha isométrica",s:3,r:"40s",g:"Core",d:"Evolua o tempo"},
+        {n:"Crunch na polia",s:3,r:"15",g:"Core",d:"Adicione carga levemente"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento na máquina",s:4,r:"12",g:"Ombro",d:"Suba se sentiu confortável"},
+        {n:"Elevação lateral halteres",s:3,r:"12",g:"Ombro",d:"Levemente mais pesado"},
+        {n:"Rosca direta barra EZ",s:4,r:"12",g:"Bíceps",d:"Foque no pico de contração"},
+        {n:"Rosca martelo",s:3,r:"12",g:"Bíceps",d:"Adicione 2kg"},
+        {n:"Tríceps polia corda",s:4,r:"12",g:"Tríceps",d:"Separe a corda no final"},
+        {n:"Tríceps testa barra EZ",s:3,r:"12",g:"Tríceps",d:"Controle sempre"},
+      ]},
+      C:{nome:"C — Perna complementar",tipo:"lower",exs:[
+        {n:"Leg press 45°",s:4,r:"12",g:"Quadríceps",d:"Suba 5-10kg"},
+        {n:"Extensora (0°-60°)",s:3,r:"12",g:"Quadríceps",d:"Mantenha amplitude reduzida"},
+        {n:"Flexora deitada",s:4,r:"12",g:"Posterior",d:"Aumente levemente"},
+        {n:"Cadeira abdutora",s:3,r:"15",g:"Glúteo",d:"Foco no squeeze final"},
+        {n:"Panturrilha na máquina",s:3,r:"15",g:"Panturrilha",d:"Adicione carga"},
+        {n:"Agachamento no Smith",s:4,r:"10",g:"Glúteo/Quad",d:"Suba carga, mantém técnica"},
+      ]},
+    }},
+    3:{foco:"Introduz halteres, volume alto",treinos:{
+      A:{nome:"A — Peito + Costas + Core",tipo:"upper",exs:[
+        {n:"Supino com halteres",s:4,r:"10-12",g:"Peito",d:"Maior ativação que máquina"},
+        {n:"Remada unilateral halter",s:4,r:"10",g:"Costas",d:"Cotovelo rente ao corpo"},
+        {n:"Crossover cabo",s:3,r:"12",g:"Peito",d:"Cruze as mãos no final"},
+        {n:"Pulldown triângulo",s:4,r:"10",g:"Costas",d:"Puxe para o peito"},
+        {n:"Prancha com elevação de braço",s:3,r:"10cx",g:"Core",d:"Estabilidade dinâmica"},
+        {n:"Abdominal infra (polia)",s:3,r:"15",g:"Core",d:"Controle total"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento com halteres",s:4,r:"10",g:"Ombro",d:"Rotação natural do punho"},
+        {n:"Elevação frontal barra",s:3,r:"12",g:"Ombro",d:"Alternado ou bilateral"},
+        {n:"Rosca concentrada",s:3,r:"12",g:"Bíceps",d:"Isolamento total"},
+        {n:"Rosca Scott barra EZ",s:4,r:"10",g:"Bíceps",d:"Lento na descida"},
+        {n:"Tríceps banco (paralelas)",s:4,r:"12",g:"Tríceps",d:"Desça controlado"},
+        {n:"Tríceps coice halter",s:3,r:"12",g:"Tríceps",d:"Cotovelo alto, estenda bem"},
+      ]},
+      C:{nome:"C — Perna complementar",tipo:"lower",exs:[
+        {n:"Leg press 45°",s:4,r:"10",g:"Quadríceps",d:"Carga progressiva"},
+        {n:"Stiff com halteres",s:4,r:"12",g:"Posterior/Glúteo",d:"Quadril atrás, coluna reta"},
+        {n:"Flexora deitada",s:4,r:"10",g:"Posterior",d:"Contraia no topo"},
+        {n:"Glúteo no cabo (polia baixa)",s:3,r:"15",g:"Glúteo",d:"Isolamento de glúteo"},
+        {n:"Panturrilha em pé máquina",s:4,r:"15",g:"Panturrilha",d:"Amplitude máxima"},
+        {n:"Avanço curto Smith",s:3,r:"12",g:"Glúteo/Estab.",d:"Passo curto, joelho alinhado"},
+      ]},
+    }},
+    4:{foco:"Semana de pico — teste de carga",treinos:{
+      A:{nome:"A — Peito + Costas + Core",tipo:"upper",exs:[
+        {n:"Supino com halteres",s:4,r:"8-10",g:"Peito",d:"Teste sua carga máxima segura"},
+        {n:"Remada curvada barra",s:4,r:"8",g:"Costas",d:"Introdução ao compound pesado"},
+        {n:"Crossover cabo",s:3,r:"12",g:"Peito",d:"Velocidade controlada"},
+        {n:"Barra fixa assistida",s:4,r:"8",g:"Costas",d:"Tente reduzir a assistência"},
+        {n:"Rollout com halter (joelhos)",s:3,r:"10",g:"Core",d:"Mesmo padrão da roda, no chão"},
+        {n:"Oblíquo polia lateral",s:3,r:"15",g:"Core",d:"Rotação controlada"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenv. halteres + elev. lateral",s:4,r:"8+12",g:"Ombro",d:"Superset: press → elevação imediata"},
+        {n:"Rosca direta pesada",s:4,r:"8",g:"Bíceps",d:"Teste de força máxima"},
+        {n:"Rosca 21 barra EZ",s:3,r:"21",g:"Bíceps",d:"7 baixo + 7 cima + 7 completo"},
+        {n:"Mergulho no banco",s:4,r:"12",g:"Tríceps",d:"Peso corporal ou disco no colo"},
+        {n:"Tríceps polia barra reta",s:3,r:"10",g:"Tríceps",d:"Finalização pesada"},
+      ]},
+      C:{nome:"C — Perna complementar",tipo:"lower",exs:[
+        {n:"Leg press 45° máximo",s:4,r:"8",g:"Quadríceps",d:"Carga máxima segura pro LCA"},
+        {n:"Stiff pesado",s:4,r:"10",g:"Posterior",d:"Foco total na postura"},
+        {n:"Búlgaro no Smith (leve)",s:3,r:"10",g:"Glúteo/Quad",d:"Pé elevado no banco, passo curto"},
+        {n:"Flexora + abdutora",s:3,r:"12",g:"Post./Glúteo",d:"Superset leve — finalizador"},
+        {n:"Panturrilha unilateral máquina",s:3,r:"15",g:"Panturrilha",d:"Equilíbrio e estabilidade"},
+        {n:"Agachamento livre leve",s:3,r:"12",g:"Glúteo/Quad",d:"Introdução ao squat livre"},
+      ]},
+    }},
+  }},
+  2:{nome:"Força",badge:"ba",cor:"#BA7517",semanas:{
+    5:{foco:"Base de força — compostos pesados",treinos:{
+      A:{nome:"A — Supino + Remada + Core",tipo:"upper",exs:[
+        {n:"Supino reto barra",s:4,r:"8-10",g:"Peito",d:"Principal do mês — técnica perfeita"},
+        {n:"Remada curvada barra",s:4,r:"8-10",g:"Costas",d:"Coluna neutra, puxe pro abdômen"},
+        {n:"Supino inclinado halteres",s:3,r:"10",g:"Peito",d:"Complemento ao supino reto"},
+        {n:"Pulldown pegada fechada",s:3,r:"10",g:"Costas",d:"Amplitude completa"},
+        {n:"Prancha com halter nas costas",s:3,r:"40s",g:"Core",d:"Progrida o peso semanalmente"},
+        {n:"Abdominal infra polia",s:3,r:"12",g:"Core",d:"Contração de core"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento militar barra",s:4,r:"8",g:"Ombro",d:"De pé ou sentado, foco na forma"},
+        {n:"Elevação lateral pesada",s:4,r:"10",g:"Ombro",d:"Levemente acima do habitual"},
+        {n:"Rosca direta barra",s:4,r:"8",g:"Bíceps",d:"Carga progressiva semanal"},
+        {n:"Rosca inclinada halteres",s:3,r:"10",g:"Bíceps",d:"Longa amplitude"},
+        {n:"Mergulho (paralelas)",s:4,r:"8-10",g:"Tríceps",d:"Adicione peso se possível"},
+        {n:"Tríceps polia barra V",s:3,r:"10",g:"Tríceps",d:"Carga alta, técnica rigorosa"},
+      ]},
+      C:{nome:"C — Perna força",tipo:"lower",exs:[
+        {n:"Agachamento livre",s:4,r:"8",g:"Quad/Glúteo",d:"Principal do mês — profundidade progressiva"},
+        {n:"Terra romeno barra",s:4,r:"8",g:"Posterior/Glúteo",d:"Protege joelho, cadeia posterior"},
+        {n:"Leg press carga alta",s:3,r:"10",g:"Quadríceps",d:"Complemento ao agachamento"},
+        {n:"Flexora carga alta",s:3,r:"10",g:"Posterior",d:"Progressão de carga"},
+        {n:"Cadeira abdutora pesada",s:3,r:"12",g:"Glúteo",d:"Estabilidade do joelho — sempre"},
+        {n:"Panturrilha pesada",s:4,r:"12",g:"Panturrilha",d:"Carga máxima progressiva"},
+      ]},
+    }},
+    6:{foco:"+1 série nos compostos, cargas maiores",treinos:{
+      A:{nome:"A — Supino + Remada + Core",tipo:"upper",exs:[
+        {n:"Supino reto barra",s:5,r:"6-8",g:"Peito",d:"Suba 2.5-5kg em relação à semana 5"},
+        {n:"Remada curvada barra",s:5,r:"6-8",g:"Costas",d:"Mesma progressão do supino"},
+        {n:"Supino inclinado halteres",s:4,r:"8",g:"Peito",d:"+1 série, leve aumento"},
+        {n:"Pulldown pegada fechada",s:4,r:"8",g:"Costas",d:"Progressão de carga"},
+        {n:"Prancha com halter",s:3,r:"50s",g:"Core",d:"Mais tempo ou mais peso"},
+        {n:"Abdominal infra polia",s:3,r:"15",g:"Core",d:"Mais reps"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento militar barra",s:5,r:"6-8",g:"Ombro",d:"Carga maior que semana 5"},
+        {n:"Elevação lateral pesada",s:4,r:"8",g:"Ombro",d:"Progressão contínua"},
+        {n:"Rosca direta barra",s:5,r:"6-8",g:"Bíceps",d:"+1 série, suba carga"},
+        {n:"Rosca inclinada halteres",s:4,r:"8",g:"Bíceps",d:"Progressão"},
+        {n:"Mergulho com peso",s:5,r:"6-8",g:"Tríceps",d:"Mais peso que semana 5"},
+        {n:"Tríceps polia barra V",s:4,r:"8",g:"Tríceps",d:"+1 série"},
+      ]},
+      C:{nome:"C — Perna força",tipo:"lower",exs:[
+        {n:"Agachamento livre",s:5,r:"6-8",g:"Quad/Glúteo",d:"Suba 2.5-5kg"},
+        {n:"Terra romeno barra",s:5,r:"6-8",g:"Posterior/Glúteo",d:"+1 série, mais carga"},
+        {n:"Leg press carga alta",s:4,r:"8",g:"Quadríceps",d:"Aumento progressivo"},
+        {n:"Flexora carga alta",s:4,r:"8",g:"Posterior",d:"Progressão"},
+        {n:"Cadeira abdutora pesada",s:3,r:"10",g:"Glúteo",d:"Sempre presente"},
+        {n:"Panturrilha pesada",s:4,r:"10",g:"Panturrilha",d:"Carga máxima"},
+      ]},
+    }},
+    7:{foco:"Pico — 5x5 clássico",treinos:{
+      A:{nome:"A — Supino + Remada + Core",tipo:"upper",exs:[
+        {n:"Supino reto barra",s:5,r:"5",g:"Peito",d:"5x5 — carga máxima segura"},
+        {n:"Remada curvada barra",s:5,r:"5",g:"Costas",d:"5x5 — carga máxima"},
+        {n:"Crossover cabo pesado",s:4,r:"8",g:"Peito",d:"Finalização intensa"},
+        {n:"Barra fixa sem assistência",s:4,r:"máx",g:"Costas",d:"Quantas conseguir com boa forma"},
+        {n:"Prancha dinâmica (toque de ombro)",s:4,r:"30s",g:"Core",d:"Alterna prancha e toque alternado"},
+        {n:"Oblíquo com cabo lateral",s:3,r:"12",g:"Core",d:"Rotação de tronco"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento militar barra",s:5,r:"5",g:"Ombro",d:"5x5 — carga máxima"},
+        {n:"Elevação lateral drop set",s:3,r:"10+10",g:"Ombro",d:"Reduz 30% da carga no meio"},
+        {n:"Rosca direta barra",s:5,r:"5",g:"Bíceps",d:"5x5, carga máxima"},
+        {n:"Rosca Scott pesada",s:4,r:"6",g:"Bíceps",d:"Baixo volume, alta carga"},
+        {n:"Mergulho com peso máximo",s:5,r:"5",g:"Tríceps",d:"5x5 com máximo de peso"},
+        {n:"Tríceps francês barra",s:3,r:"8",g:"Tríceps",d:"Amplitude total, carga alta"},
+      ]},
+      C:{nome:"C — Perna força",tipo:"lower",exs:[
+        {n:"Agachamento livre",s:5,r:"5",g:"Quad/Glúteo",d:"5x5 — semana de pico"},
+        {n:"Terra romeno barra",s:5,r:"5",g:"Posterior/Glúteo",d:"Carga máxima segura"},
+        {n:"Búlgaro com halteres",s:4,r:"8",g:"Glúteo/Quad",d:"Progressão funcional"},
+        {n:"Flexora pesada",s:4,r:"6",g:"Posterior",d:"Alta carga, baixo volume"},
+        {n:"Cadeira abdutora",s:3,r:"10",g:"Glúteo",d:"Fundamental sempre"},
+        {n:"Panturrilha pesada",s:4,r:"8",g:"Panturrilha",d:"Carga máxima"},
+      ]},
+    }},
+    8:{foco:"Deload — recuperação ativa (-30% carga)",treinos:{
+      A:{nome:"A — Peito + Costas + Core",tipo:"upper",exs:[
+        {n:"Supino reto barra",s:3,r:"10",g:"Peito",d:"70% da carga — recuperação"},
+        {n:"Remada curvada barra",s:3,r:"10",g:"Costas",d:"Foco total na técnica"},
+        {n:"Pulldown barra reta",s:3,r:"12",g:"Costas",d:"Leve e controlado"},
+        {n:"Crossover cabo",s:3,r:"15",g:"Peito",d:"Amplitude máxima, carga leve"},
+        {n:"Prancha isométrica",s:3,r:"40s",g:"Core",d:"Sem peso adicional"},
+        {n:"Crunch na polia",s:3,r:"15",g:"Core",d:"Movimento controlado"},
+      ]},
+      B:{nome:"B — Ombro + Bíceps + Tríceps",tipo:"upper",exs:[
+        {n:"Desenvolvimento halteres",s:3,r:"12",g:"Ombro",d:"70% da carga — deload"},
+        {n:"Elevação lateral leve",s:3,r:"15",g:"Ombro",d:"Foco na forma"},
+        {n:"Rosca direta halteres",s:3,r:"12",g:"Bíceps",d:"Carga reduzida"},
+        {n:"Rosca martelo",s:3,r:"12",g:"Bíceps",d:"Leve e controlado"},
+        {n:"Tríceps polia corda",s:3,r:"15",g:"Tríceps",d:"Recuperação ativa"},
+        {n:"Tríceps testa leve",s:3,r:"12",g:"Tríceps",d:"Sem forçar"},
+      ]},
+      C:{nome:"C — Perna deload",tipo:"lower",exs:[
+        {n:"Leg press moderado",s:3,r:"12",g:"Quadríceps",d:"70% — recuperação do joelho"},
+        {n:"Stiff leve",s:3,r:"12",g:"Posterior",d:"Foco na mobilidade"},
+        {n:"Flexora leve",s:3,r:"15",g:"Posterior",d:"Recuperação"},
+        {n:"Cadeira abdutora",s:3,r:"15",g:"Glúteo",d:"Sempre presente"},
+        {n:"Panturrilha moderada",s:3,r:"15",g:"Panturrilha",d:"Sem forçar"},
+        {n:"Alongamento ativo quadril",s:1,r:"10min",g:"Mobilidade",d:"Foco em quadril e posterior de coxa"},
+      ]},
+    }},
+  }},
+  3:{nome:"Performance",badge:"bp",cor:"#993556",semanas:{
+    9:{foco:"Explosão com máquinas e halteres",treinos:{
+      A:{nome:"A — Potência upper",tipo:"upper",exs:[
+        {n:"Supino halteres explosivo",s:4,r:"6",g:"Peito/Potência",d:"Sobe RÁPIDO, desce 3s — velocidade intencional"},
+        {n:"Crossover cabo velocidade",s:4,r:"10",g:"Peito/Explosão",d:"Máxima velocidade de fechamento — simula smash"},
+        {n:"Remada curvada explosiva",s:4,r:"6",g:"Costas",d:"Puxe rápido, controle na volta"},
+        {n:"Pulldown explosivo barra larga",s:3,r:"8",g:"Costas",d:"Velocidade máxima na puxada"},
+        {n:"Rotação cabo perfil (forehand)",s:4,r:"12cx",g:"Core/Tênis",d:"Cabo na altura do peito, gira quadril — forehand"},
+        {n:"Rotação cabo perfil (backhand)",s:4,r:"12cx",g:"Core/Tênis",d:"Lado oposto — backhand com rotação completa"},
+      ]},
+      B:{nome:"B — Ombro + braços potência",tipo:"upper",exs:[
+        {n:"Desenvolvimento halteres explosivo",s:4,r:"6",g:"Ombro",d:"Push rápido, controle na descida"},
+        {n:"Elevação frontal cabo (overhead)",s:3,r:"10",g:"Ombro/Potência",d:"Cabo de baixo, sobe explosivo até overhead"},
+        {n:"Rosca direta barra explosiva",s:4,r:"6",g:"Bíceps",d:"Velocidade máxima na subida"},
+        {n:"Rosca martelo alternada rápida",s:3,r:"10",g:"Bíceps",d:"Cadência rápida, alternado"},
+        {n:"Mergulho paralelas explosivo",s:4,r:"6",g:"Tríceps",d:"Push rápido, controle na descida"},
+        {n:"Tríceps polia corda velocidade",s:3,r:"12",g:"Tríceps",d:"Extensão máxima velocidade — movimento de saque"},
+      ]},
+      C:{nome:"C — Perna potência (LCA respeitado)",tipo:"lower",exs:[
+        {n:"Leg press explosivo",s:4,r:"6",g:"Quad/Potência",d:"Carga moderada — empurra RÁPIDO"},
+        {n:"Terra romeno halteres",s:4,r:"8",g:"Posterior/Glúteo",d:"Potência de quadril — base da aceleração no tênis"},
+        {n:"Cadeira abdutora",s:3,r:"12",g:"Glúteo/Estab.",d:"Sempre — estabilidade do joelho"},
+        {n:"Step up no banco (controlado)",s:3,r:"10cx",g:"Glúteo/Quad",d:"Sobe firme, sem salto — glúteo na subida"},
+        {n:"Panturrilha máquina explosiva",s:4,r:"12",g:"Panturrilha",d:"Sobe rápido, desce controlado"},
+        {n:"Agachamento goblet halter",s:3,r:"10",g:"Funcional",d:"Halter no peito — padrão funcional de base"},
+      ]},
+    }},
+    10:{foco:"Supersets + potência rotacional",treinos:{
+      A:{nome:"A — Upper supersets tênis",tipo:"upper",exs:[
+        {n:"Supino barra + crossover cabo",s:4,r:"6+10",g:"Peito/Potência",d:"Superset: supino pesado → crossover explosivo imediato"},
+        {n:"Remada curvada + pulldown",s:4,r:"6+10",g:"Costas",d:"Superset: remada pesada → pulldown explosivo"},
+        {n:"Rotação cabo alto→baixo (forehand)",s:4,r:"12cx",g:"Core/Tênis",d:"Cabo acima da cabeça, puxa diagonal até quadril"},
+        {n:"Rotação cabo baixo→alto (backhand)",s:4,r:"12cx",g:"Core/Tênis",d:"Cabo na altura do joelho, puxa diagonal para cima"},
+        {n:"Flexão lateral cabo (oblíquo)",s:3,r:"12cx",g:"Core/Estab.",d:"Cabo lateral, inclina tronco e volta com força"},
+        {n:"Prancha lateral com toque",s:3,r:"15cx",g:"Core",d:"Prancha lateral, toca ombro alternado"},
+      ]},
+      B:{nome:"B — Ombro + braços supersets",tipo:"upper",exs:[
+        {n:"Desenv. militar + elev. lateral",s:4,r:"6+10",g:"Ombro",d:"Superset: press pesado → elevação lateral imediata"},
+        {n:"Face pull cabo + elev. frontal",s:3,r:"12+12",g:"Ombro",d:"Superset: rotação externa → frontal"},
+        {n:"Rosca direta + rosca martelo",s:4,r:"8+10",g:"Bíceps",d:"Superset: pronado → neutro"},
+        {n:"Rosca concentrada halter",s:3,r:"10",g:"Bíceps",d:"Isolamento final"},
+        {n:"Mergulho + tríceps polia corda",s:4,r:"8+12",g:"Tríceps",d:"Superset: compound → isolamento"},
+        {n:"Tríceps polia corda alta cadência",s:3,r:"15",g:"Tríceps",d:"Alta velocidade — condicionamento de saque"},
+      ]},
+      C:{nome:"C — Perna supersets potência",tipo:"lower",exs:[
+        {n:"Leg press explosivo + flexora",s:4,r:"8+10",g:"Quad/Post.",d:"Superset: leg press velocidade → flexora imediata"},
+        {n:"Búlgaro Smith + stiff halteres",s:4,r:"8+10",g:"Glúteo/Post.",d:"Superset: búlgaro → stiff imediato"},
+        {n:"Abdutora pesada + adutora",s:3,r:"12+12",g:"Glúteo/Estab.",d:"Superset abdutora → adutora"},
+        {n:"Step up banco + panturrilha",s:3,r:"10+15",g:"Funcional",d:"Superset: step up → panturrilha explosiva"},
+        {n:"Agachamento goblet halter",s:4,r:"12",g:"Funcional",d:"Padrão funcional, aumente o peso"},
+        {n:"Cadeira abdutora",s:3,r:"15",g:"Glúteo/LCA",d:"Sempre presente — finalizador"},
+      ]},
+    }},
+    11:{foco:"Alta intensidade — pico de performance",treinos:{
+      A:{nome:"A — Potência máxima upper",tipo:"upper",exs:[
+        {n:"Supino barra carga máxima",s:5,r:"3-5",g:"Peito/Força",d:"Base da potência — força máxima"},
+        {n:"Crossover cabo máxima velocidade",s:4,r:"8",g:"Peito/Explosão",d:"Carga leve, velocidade máxima"},
+        {n:"Remada curvada máxima",s:5,r:"3-5",g:"Costas",d:"Carga máxima, forma impecável"},
+        {n:"Barra fixa lastro",s:4,r:"5",g:"Costas",d:"Adicione peso — força máxima"},
+        {n:"Circuito rotação cabo tênis",s:4,r:"10cx",g:"Core/Tênis",d:"Forehand + backhand em sequência, 30s descanso"},
+        {n:"Prancha com toque de ombro",s:3,r:"20",g:"Core",d:"Antirotação — fundamental para tênis"},
+      ]},
+      B:{nome:"B — Ombro + braços máxima potência",tipo:"upper",exs:[
+        {n:"Desenv. militar barra carga máx",s:5,r:"3-5",g:"Ombro",d:"Força máxima de ombro"},
+        {n:"Elevação frontal cabo alta vel.",s:4,r:"8",g:"Ombro/Potência",d:"Cabo de baixo, sobe explosivo"},
+        {n:"Rosca barra máxima",s:5,r:"5",g:"Bíceps",d:"Força máxima de bíceps"},
+        {n:"Rosca martelo velocidade",s:3,r:"15",g:"Bíceps",d:"Máxima velocidade de contração"},
+        {n:"Mergulho com lastro máximo",s:5,r:"5",g:"Tríceps",d:"Força máxima de tríceps"},
+        {n:"Tríceps polia extensão explosiva",s:3,r:"10",g:"Tríceps",d:"Velocidade de extensão — saque"},
+      ]},
+      C:{nome:"C — Perna alta performance",tipo:"lower",exs:[
+        {n:"Agachamento livre máximo",s:5,r:"3",g:"Quad/Glúteo",d:"Carga máxima — pico do programa"},
+        {n:"Terra romeno máximo",s:5,r:"3",g:"Posterior",d:"Cadeia posterior máxima"},
+        {n:"Leg press explosivo pesado",s:4,r:"5",g:"Quad/Potência",d:"Carga alta + velocidade máxima"},
+        {n:"Abdutora pesada",s:3,r:"10",g:"Glúteo/Estab.",d:"Carga alta — proteção máxima do joelho"},
+        {n:"Step up banco alto",s:3,r:"8cx",g:"Quad/Glúteo",d:"Banco mais alto — desafio máximo sem impacto"},
+        {n:"Panturrilha unilateral máquina",s:4,r:"10",g:"Panturrilha",d:"Unilateral — força e equilíbrio"},
+      ]},
+    }},
+    12:{foco:"Semana de teste — meça sua evolução",treinos:{
+      A:{nome:"A — Teste força e potência",tipo:"upper",exs:[
+        {n:"Supino barra (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Peito",d:"Registre sua carga máxima"},
+        {n:"Crossover cabo velocidade 30s",s:3,r:"30s",g:"Peito/Potência",d:"Conta reps em 30s — índice de potência"},
+        {n:"Remada curvada (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Costas",d:"Carga máxima — registre"},
+        {n:"Barra fixa máximas",s:2,r:"máx",g:"Costas",d:"Compare com semana 4"},
+        {n:"Rotação cabo forehand vel. máx.",s:3,r:"10cx",g:"Core/Tênis",d:"Velocidade máxima — avalie qualidade"},
+        {n:"Prancha isométrica tempo máx.",s:2,r:"máx",g:"Core",d:"Compare com semana 1"},
+      ]},
+      B:{nome:"B — Teste braços + ombro",tipo:"upper",exs:[
+        {n:"Desenv. militar (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Ombro",d:"Carga máxima — registre"},
+        {n:"Elevação frontal cabo vel. 30s",s:3,r:"30s",g:"Ombro/Potência",d:"Reps em 30s — potência de ombro"},
+        {n:"Rosca direta (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Bíceps",d:"Força máxima de bíceps"},
+        {n:"Rosca martelo velocidade 30s",s:3,r:"30s",g:"Bíceps",d:"Resistência de bíceps"},
+        {n:"Mergulho com peso máximo",s:3,r:"5→3→1",g:"Tríceps",d:"Força máxima de tríceps"},
+        {n:"Tríceps polia velocidade 30s",s:3,r:"30s",g:"Tríceps",d:"Resistência de tríceps — saque"},
+      ]},
+      C:{nome:"C — Teste perna e funcional",tipo:"lower",exs:[
+        {n:"Agachamento livre (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Quad/Glúteo",d:"Compare com semana 5"},
+        {n:"Terra romeno (pirâmide 5-3-1)",s:3,r:"5→3→1",g:"Posterior",d:"Carga máxima de cadeia posterior"},
+        {n:"Leg press máximo",s:2,r:"máx reps",g:"Quadríceps",d:"Quantas reps com a carga mais alta"},
+        {n:"Abdutora resistência 45s",s:3,r:"45s",g:"Glúteo/Estab.",d:"Resistência lateral — tênis"},
+        {n:"Step up banco velocidade",s:2,r:"20cx",g:"Funcional",d:"No tempo — compare com semana 9"},
+        {n:"Circuito agach+rotação cabo",s:3,r:"45s",g:"Performance",d:"Agachamento goblet → rotação cabo"},
+      ]},
+    }},
+  }},
+};
+
+// STORAGE
+async function salvar(key, val){
+  try{ await window.storage.set(key, JSON.stringify(val)); showSaved(); }catch(e){}
+}
+async function carregar(key, fallback){
+  try{ const r=await window.storage.get(key); return r?JSON.parse(r.value):fallback; }catch(e){ return fallback; }
+}
+function showSaved(){
+  const el=document.getElementById('save-indicator');
+  el.style.display='flex';
+  clearTimeout(window._saveTimer);
+  window._saveTimer=setTimeout(()=>el.style.display='none',2000);
+}
+
+let mesAtivo=1,semAtiva=1,treinoAtivo=null,cargas={},historico=[];
+
+async function init(){
+  cargas = await carregar('cargas', {});
+  historico = await carregar('historico', []);
+  const nav = await carregar('nav', {mes:1,sem:1});
+  mesAtivo = nav.mes; semAtiva = nav.sem;
+  initMesTabs(); initSemTabs(); renderTreinos();
+  const pct=Math.round(((mesAtivo-1)/3)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-text').textContent='Mês '+mesAtivo+' — '+PROGRAMA[mesAtivo].nome;
+  document.querySelectorAll('.mtab')[mesAtivo-1].classList.add('active');
+}
+
+function toast(m){const t=document.getElementById('toaster');t.textContent=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,2200)}
+
+function initMesTabs(){
+  const c=document.getElementById('mes-tabs');c.innerHTML='';
+  Object.entries(PROGRAMA).forEach(([k,m])=>{
+    const b=document.createElement('button');
+    b.className='mtab'+(k==mesAtivo?' active':'');
+    b.textContent='M'+k+' — '+m.nome;
+    b.onclick=()=>setMes(parseInt(k),b);
+    c.appendChild(b);
+  });
+}
+function setMes(m,btn){
+  mesAtivo=m;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const sems=Object.keys(PROGRAMA[m].semanas).map(Number);
+  semAtiva=sems[0];
+  salvar('nav',{mes:mesAtivo,sem:semAtiva});
+  initSemTabs();renderTreinos();
+  const pct=Math.round(((m-1)/3)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-text').textContent='Mês '+m+' — '+PROGRAMA[m].nome;
+}
+function initSemTabs(){
+  const c=document.getElementById('sem-tabs');c.innerHTML='';
+  Object.keys(PROGRAMA[mesAtivo].semanas).map(Number).forEach(s=>{
+    const b=document.createElement('button');
+    b.className='stab'+(s==semAtiva?' active':'');
+    b.textContent='S'+s;
+    b.onclick=()=>setSem(s,b);
+    c.appendChild(b);
+  });
+}
+function setSem(s,btn){
+  semAtiva=s;
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  salvar('nav',{mes:mesAtivo,sem:semAtiva});
+  renderTreinos();
+}
+
+function ultimaCarga(exercicio){
+  for(const h of historico){
+    const ex=h.exs.find(e=>e.n===exercicio);
+    if(ex && ex.c>0) return ex.c;
+  }
+  return null;
+}
+
+function renderTreinos(){
+  const list=document.getElementById('treinos-list');
+  const sem=PROGRAMA[mesAtivo].semanas[semAtiva];
+  const cor=PROGRAMA[mesAtivo].cor;
+  const badge=PROGRAMA[mesAtivo].badge;
+  list.innerHTML=`<div class="tip-box">${sem.foco}</div>`;
+  Object.entries(sem.treinos).forEach(([key,t])=>{
+    const grupos=[...new Set(t.exs.map(e=>e.g.split('/')[0]))];
+    const div=document.createElement('div');div.className='card';
+    div.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="t-title" style="margin-bottom:0">${t.nome}</div>
+        <span class="badge ${badge}">${key}</span>
+      </div>
+      <div class="session-summary">
+        <span class="sum-pill"><i class="ti ti-clock" style="font-size:13px" aria-hidden="true"></i> ~${t.tipo==='upper'?'71':'74'} min</span>
+        <span class="sum-pill"><i class="ti ti-bike" style="font-size:13px" aria-hidden="true"></i> ${CARDIO[semAtiva].tempo}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;margin-bottom:10px">${grupos.map(g=>`<span class="tag">${g}</span>`).join('')}</div>
+      <button class="btn-p" onclick="iniciar('${key}',event)"><i class="ti ti-player-play" style="font-size:13px" aria-hidden="true"></i> Iniciar sessão</button>`;
+    list.appendChild(div);
+  });
+}
+
+function iniciar(key,e){
+  e.stopPropagation();
+  treinoAtivo={key,mes:mesAtivo,sem:semAtiva};
+  renderTreinar();
+  document.querySelectorAll('.nb')[1].click();
+}
+
+function renderTreinar(){
+  const c=document.getElementById('treinar-content');
+  if(!treinoAtivo){
+    c.innerHTML=`<div class="empty"><i class="ti ti-dumbbell" style="font-size:40px;color:var(--color-text-secondary)" aria-hidden="true"></i><p style="margin-top:12px">Selecione um treino na aba Treinos</p></div>`;
+    return;
+  }
+  const t=PROGRAMA[treinoAtivo.mes].semanas[treinoAtivo.sem].treinos[treinoAtivo.key];
+  const cor=PROGRAMA[treinoAtivo.mes].cor;
+  const aq=AQUEC[t.tipo], al=ALONG[t.tipo], cd=CARDIO[treinoAtivo.sem];
+
+  let html=`<div class="card" style="border-left:3px solid ${cor};border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0;margin-bottom:4px">
+    <div class="t-title">${t.nome}</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px">Mês ${treinoAtivo.mes} · Semana ${treinoAtivo.sem}</div>
+  </div>`;
+
+  html+=`<div class="phase-header aquec"><i class="ti ti-flame" aria-hidden="true"></i> Aquecimento — 8 min</div>
+  <div class="card" style="padding:10px 14px;margin-bottom:16px">`;
+  aq.forEach(a=>{ html+=`<div class="phase-item"><div class="ex-name">${a.n}</div><div class="ex-dica">${a.d}</div></div>`; });
+  html+=`</div>`;
+
+  html+=`<div class="phase-header treino"><i class="ti ti-dumbbell" aria-hidden="true"></i> Treino principal</div>`;
+  t.exs.forEach((ex,i)=>{
+    const k=`m${treinoAtivo.mes}_s${treinoAtivo.sem}_${treinoAtivo.key}_${i}`;
+    if(cargas[k]==null) cargas[k]=0;
+    const isSuper=ex.r.includes('+');
+    const ult=ultimaCarga(ex.n);
+    const ultHtml=ult!=null?`<div class="ultima"><i class="ti ti-history" style="font-size:11px" aria-hidden="true"></i> Última vez: ${ult}kg</div>`:'';
+    html+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px">
+        <div style="flex:1;margin-right:8px">
+          <div class="ex-name">${ex.n}</div>
+          <div class="ex-meta">${ex.s} séries × ${ex.r}${isSuper?` <span class="super-tag">superset</span>`:''}</div>
+          ${ultHtml}
+        </div>
+        <span class="tag" style="font-size:10px;white-space:nowrap">${ex.g.split('/')[0]}</span>
+      </div>
+      <div class="ex-dica">${ex.d}</div>
+      <div class="carga-row">
+        <span style="font-size:12px;color:var(--color-text-secondary)">Carga hoje (kg)</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="cbtn" onclick="mc('${k}',-2.5)">−</button>
+          <span class="cval" id="cv-${k}">${cargas[k]}kg</span>
+          <button class="cbtn" onclick="mc('${k}',2.5)">+</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html+=`<div class="phase-header cardio" style="margin-top:4px"><i class="ti ti-bike" aria-hidden="true"></i> Cardio pós-treino — ${cd.tempo}</div>
+  <div class="card" style="padding:12px 14px;margin-bottom:16px">
+    <div class="ex-name" style="margin-bottom:4px">${cd.equip}</div>
+    <div class="ex-dica">${cd.protocolo}</div>
+  </div>`;
+
+  html+=`<div class="phase-header along"><i class="ti ti-heart" aria-hidden="true"></i> Alongamento — 8 min</div>
+  <div class="card" style="padding:10px 14px;margin-bottom:16px">`;
+  al.forEach(a=>{ html+=`<div class="phase-item"><div class="ex-name">${a.n}</div><div class="ex-dica">${a.d}</div></div>`; });
+  html+=`</div>`;
+
+  html+=`<button class="btn-p" onclick="finalizar()"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Finalizar sessão</button>`;
+  c.innerHTML=html;
+}
+
+function mc(k,d){
+  cargas[k]=Math.max(0,Math.round((cargas[k]+d)*10)/10);
+  const el=document.getElementById('cv-'+k);
+  if(el) el.textContent=cargas[k]+'kg';
+  salvar('cargas', cargas);
+}
+
+function finalizar(){
+  if(!treinoAtivo)return;
+  const t=PROGRAMA[treinoAtivo.mes].semanas[treinoAtivo.sem].treinos[treinoAtivo.key];
+  historico.unshift({
+    data:new Date().toLocaleDateString('pt-BR'),
+    hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+    nome:t.nome, mes:treinoAtivo.mes, sem:treinoAtivo.sem,
+    exs:t.exs.map((ex,i)=>({n:ex.n, c:cargas[`m${treinoAtivo.mes}_s${treinoAtivo.sem}_${treinoAtivo.key}_${i}`]||0}))
+  });
+  salvar('historico', historico);
+  treinoAtivo=null;
+  toast('Sessão salva! 💪');
+  renderProgresso(); renderTreinar();
+  setTimeout(()=>document.querySelectorAll('.nb')[2].click(),500);
+}
+
+function renderProgresso(){
+  document.getElementById('st-total').textContent=historico.length;
+  document.getElementById('st-mes').textContent='M'+mesAtivo;
+  document.getElementById('st-sem').textContent='S'+semAtiva;
+  document.getElementById('st-exs').textContent=historico.reduce((a,h)=>a+h.exs.length,0);
+  const list=document.getElementById('hist-list');
+  if(!historico.length){
+    list.innerHTML=`<div class="empty"><i class="ti ti-history" style="font-size:36px;color:var(--color-text-secondary)" aria-hidden="true"></i><p style="margin-top:10px">Nenhum treino ainda</p></div>`;
+    return;
+  }
+  list.innerHTML=historico.map(h=>`
+    <div class="hist-item">
+      <div class="hist-date">Mês ${h.mes} · Semana ${h.sem} · ${h.data} às ${h.hora}</div>
+      <div class="hist-name">${h.nome}</div>
+      <div class="hist-exs">${h.exs.map(e=>e.n+(e.c?` <strong>${e.c}kg</strong>`:'')).join(' · ')}</div>
+    </div>`).join('');
+}
+
+function goScreen(name,btn){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sc-'+name).classList.add('active');
+  const titles={treinos:'Programa 3 meses',treinar:'Treinar agora',prog:'Progresso'};
+  document.getElementById('htitle').textContent=titles[name];
+  if(name==='treinar') renderTreinar();
+  if(name==='prog') renderProgresso();
+}
+
+init();
+</script>
